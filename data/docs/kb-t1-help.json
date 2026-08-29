@@ -1,0 +1,7 @@
+{
+  "doc_id": "kb-t1-help",
+  "tenant_id": 1,
+  "classification": "standard",
+  "title": "Checking a payment",
+  "body": "Look up a payment with its reference number. Most transfers settle within one business day."
+}

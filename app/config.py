@@ -1,8 +1,9 @@
 """Runtime settings for the payments agent.
 
-Baseline posture is SAFE: sensitive tools (money movement) require human approval, PII is
-masked on read, generation temperature is low for tool-driving paths, transfers are capped
-and restricted to an allow-list of recipient domains. The vulnerable demo branch flips these.
+Baseline is a benign payments-help assistant: it answers questions from the help center and
+reports a payment's status by reference. It holds no customer PII, has no data-export or
+money-movement capability, and no records to leak. Sensitive tools, when added, require
+human approval.
 """
 from __future__ import annotations
 
@@ -14,12 +15,7 @@ class Settings(BaseSettings):
     openai_temperature: float = 0.2          # low for tool-driving / effectful paths
     max_tool_iterations: int = 6
 
-    # --- data / money-boundary controls (safe defaults) ---
-    require_tool_approval: bool = True        # human-in-the-loop for transfer / export tools
-    mask_pii: bool = True                     # mask SSN / bank / card on read
-    enforce_tenant_scope: bool = True         # every query is filtered by the caller's tenant
-    allowed_recipient_domains: tuple[str, ...] = ("acme.example",)  # transfers only to known payees
-    transfer_cap_cents: int = 500_00          # hard cap per transfer ($500.00)
+    require_tool_approval: bool = True        # human-in-the-loop for any write / effectful tool
 
     log_level: str = "INFO"
 

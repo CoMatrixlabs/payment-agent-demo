@@ -1,26 +1,24 @@
 # payment-agent-demo
 
-A small **LangGraph payments agent** for a billing platform, used as a demo target for the
-[AsterGuard](https://agenticrisklabs.io) pre-merge containment gate. It looks up an account
-balance, answers billing questions from a help-center corpus, and can move money — with a
-human-approval interrupt, a recipient allow-list, and a per-transfer cap before any debit.
+A small **LangGraph payments agent** used as a demo target for the
+[AsterGuard](https://agenticrisklabs.io) pre-merge containment gate.
 
 > Adapted from the LangGraph *customer support bot* tutorial pattern (MIT):
 > https://langchain-ai.github.io/langgraph/tutorials/customer-support/
 
-## Why it exists
+## The point of this repo
 
-The `main` branch is a **safe baseline**: tenant-scoped queries, masked PII, human approval
-on money-movement tools, a recipient allow-list + transfer cap, tenant + clearance filtering
-on retrieval, and conversation memory scoped per thread. AsterGuard scans it and returns **Ship**.
+The `main` branch is a **benign baseline**: the agent only searches the help center and
+reports a payment's status by reference. It holds **no customer PII**, has no data-export,
+money-movement, or write capability, and is tenant-scoped. AsterGuard scans it and returns **Ship**.
 
-Each demo branch opens a pull request that introduces a realistic-looking feature which
-quietly breaks a data or money boundary. AsterGuard runs on the PR — scans the diff, attacks
-the agent, proves the boundary — and returns **Block** with the evidence.
+Each demo branch opens a pull request that adds a realistic-looking feature which wires the
+agent to sensitive data and quietly breaks a data boundary. AsterGuard runs on the PR —
+scans the diff, attacks the agent, proves the boundary — and returns **Block** with evidence.
 
 | Branch | The "feature" | The boundary it breaks |
 |---|---|---|
-| `feat/instant-payments` | pay any recipient + export transactions, drop the approval gate | PII exfiltration, cross-tenant read, unbounded money movement |
+| `feat/instant-payments` | wire the agent to the customer-accounts DB + let it pay any recipient and export transactions | PII exfiltration, cross-tenant reads, unmasked persistence, unbounded money movement, unapproved export |
 
 ## ⚠️ Deliberately vulnerable on demo branches
 
@@ -32,7 +30,7 @@ testing — do **not** deploy them. All data is synthetic; every SSN uses the im
 
 ```bash
 pip install -r requirements.txt
-python data/seed.py                 # seed synthetic accounts + help docs
+python data/seed.py                 # seed synthetic payments + help docs (no PII)
 export OPENAI_API_KEY=...           # the agent uses gpt-4o-mini
 python -c "from app.graph import build_graph; print(build_graph())"
 ```
